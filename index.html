@@ -1,105 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Welding Calculator & Decimal to Ruler Converter</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-  }
-  .container {
-    max-width: 300px;
-    margin: 0 auto;
-    padding-top: 50px;
-  }
-  .form-group {
-    margin-bottom: 15px;
-  }
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  .form-group input {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-  }
-  .results {
-    margin-top: 20px;
-  }
-  .section {
-    margin-bottom: 30px;
-  }
-</style>
-</head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Welding Calculator</title><style>body{font-family:Arial,sans-serif;}.container{max-width:300px;margin:0 auto;padding-top:50px;}.form-group{margin-bottom:15px;}.form-group label{display:block;margin-bottom:5px;}.form-group input{width:100%;padding:8px;box-sizing:border-box;}.results{margin-top:20px;}.section{margin-bottom:20px;}</style></head>
 <body>
-
 <div class="container">
-  <!-- Welding Calculator Section -->
-  <div class="section">
-    <div class="form-group">
-      <label for="totalLength">Total length of the steel to be welded to (in feet):</label>
-      <input type="number" id="totalLength" name="totalLength" step="0.01" min="0">
-    </div>
-    <div class="form-group">
-      <label for="tubeSize">Size of each Crossmember (in inches):</label>
-      <input type="number" id="tubeSize" name="tubeSize" step="0.01" min="0">
-    </div>
-    <div class="form-group">
-      <label for="numberOfTubes">Number of Crossmembers(including sides):</label>
-      <input type="number" id="numberOfTubes" name="numberOfTubes" min="0">
-    </div>
-    <button type="button" onclick="calculate()">Calculate</button>
-    <div class="results" id="results"></div>
-  </div>
-
-  <!-- Decimal to Ruler Converter Section -->
-  <div class="section">
-    <div class="form-group">
-      <label for="decimalInput">Enter a decimal to convert to ruler fractions:</label>
-      <input type="number" id="decimalInput" name="decimalInput" step="0.01" min="0" max="1">
-    </div>
-    <button type="button" onclick="convertToRuler()">Convert</button>
-    <div class="results" id="decimalResults"></div>
-  </div>
+<!-- Welding Calculator Section -->
+<div class="section">
+<div class="form-group"><label for="totalLength">Total length of the steel to be welded to (in feet):</label><input type="number" id="totalLength" name="totalLength" step="0.01" min="0"></div>
+<div class="form-group"><label for="tubeSize">Size of each Crossmember (in inches):</label><input type="number" id="tubeSize" name="tubeSize" step="0.01" min="0"></div>
+<div class="form-group"><label for="numberOfTubes">Number of Crossmembers(including sides):</label><input type="number" id="numberOfTubes" name="numberOfTubes" min="0"></div>
+<button type="button" onclick="calculate()">Calculate</button>
+<div class="results" id="results"></div>
 </div>
-
+<!-- Railing Top Tubing Calculator Section -->
+<div class="section">
+<div class="form-group"><label for="railingLength">Length of the Railing (in inches):</label><input type="number" id="railingLength" name="railingLength" step="0.01" min="0"></div>
+<div class="form-group"><label for="railingAngle">Angle of the Railing (in degrees):</label><input type="number" id="railingAngle" name="railingAngle" step="0.01" min="0" max="90"></div>
+<button type="button" onclick="calculateRailing()">Calculate</button>
+<div class="results" id="railingResults"></div>
+</div>
+<!-- Tubing Length Calculator Section -->
+<div class="section">
+<div class="form-group"><label for="sideA">Length of Side A (in inches):</label><input type="number" id="sideA" name="sideA" step="0.01" min="0"></div>
+<div class="form-group"><label for="sideB">Length of Side B (in inches):</label><input type="number" id="sideB" name="sideB" step="0.01" min="0"></div>
+<button type="button" onclick="calculateTubingLength()">Calculate</button>
+<div class="results" id="tubingResults"></div>
+</div>
+</div>
 <script>
-  function calculate() {
-    const totalLength = parseFloat(document.getElementById('totalLength').value) * 12; // converting to inches
-    const tubeSize = parseFloat(document.getElementById('tubeSize').value);
-    const numberOfTubes = parseInt(document.getElementById('numberOfTubes').value);
-
-    if (isNaN(totalLength) || isNaN(tubeSize) || isNaN(numberOfTubes)) {
-      document.getElementById('results').innerText = 'Please provide valid inputs for total length, tube size, and number of tubes.';
-      return;
-    }
-
-    const totalTubeSpace = tubeSize * numberOfTubes;
-    const spaceBetweenTubes = (totalLength - totalTubeSpace) / (numberOfTubes - 1);
-    const centerToCenterDistance = spaceBetweenTubes + tubeSize;
-
-    document.getElementById('results').innerText = `
-      Center to Center Distance: ${centerToCenterDistance.toFixed(2)} inches (${(centerToCenterDistance/12).toFixed(2)} feet)
-      Space Between Tubes: ${spaceBetweenTubes.toFixed(2)} inches (${(spaceBetweenTubes/12).toFixed(2)} feet)
-    `;
-  }
-
-  function convertToRuler() {
-    const decimalValue = parseFloat(document.getElementById('decimalInput').value);
-    if (isNaN(decimalValue) || decimalValue < 0 || decimalValue > 1) {
-      document.getElementById('decimalResults').innerText = 'Please enter a valid decimal between 0 and 1.';
-      return;
-    }
-    
-    const fractions = ["1/16", "1/8", "3/16", "1/4", "5/16", "3/8", "7/16", "1/2", "9/16", "5/8", "11/16", "3/4", "13/16", "7/8", "15/16"];
-    const closestFraction = fractions.reduce((prev, curr) => {
-      return Math.abs(parseFloat(eval(curr)) - decimalValue) < Math.abs(parseFloat(eval(prev)) - decimalValue) ? curr : prev;
-    });
-
-    document.getElementById('decimalResults').innerText = `Closest Ruler Fraction: ${closestFraction}`;
-  }
+function calculate(){
+const totalLength=parseFloat(document.getElementById('totalLength').value)*12;
+const tubeSize=parseFloat(document.getElementById('tubeSize').value);
+const numberOfTubes=parseInt(document.getElementById('numberOfTubes').value);
+if(isNaN(totalLength)||isNaN(tubeSize)||isNaN(numberOfTubes)){document.getElementById('results').innerText='Please provide valid inputs for total length, tube size, and number of tubes.';return;}
+const totalTubeSpace=tubeSize*numberOfTubes;
+const spaceBetweenTubes=(totalLength-totalTubeSpace)/(numberOfTubes-1);
+const centerToCenterDistance=spaceBetweenTubes+tubeSize;
+document.getElementById('results').innerText=`Center to Center Distance: ${centerToCenterDistance.toFixed(2)} inches (${(centerToCenterDistance/12).toFixed(2)} feet)\nSpace Between Tubes: ${spaceBetweenTubes.toFixed(2)} inches (${(spaceBetweenTubes/12).toFixed(2)} feet)`;}
+function calculateRailing(){
+const railingLength=parseFloat(document.getElementById('railingLength').value);
+const railingAngle=parseFloat(document.getElementById('railingAngle').value);
+if(isNaN(railingLength)||isNaN(railingAngle)){document.getElementById('railingResults').innerText='Please provide valid inputs for the railing length and angle.';return;}
+const railingHeight=42;
+const topTubingLength=Math.sqrt(Math.pow(railingLength,2)+Math.pow(railingHeight/Math.cos(railingAngle*(Math.PI/180)),2));
+document.getElementById('railingResults').innerText=`Required Top Tubing Length: ${topTubingLength.toFixed(2)} inches (${(topTubingLength/12).toFixed(2)} feet)`;}
+function calculateTubingLength(){
+const sideA=parseFloat(document.getElementById('sideA').value);
+const sideB=parseFloat(document.getElementById('sideB').value);
+if(isNaN(sideA)||isNaN(sideB)){document.getElementById('tubingResults').innerText='Please provide valid inputs for both sides.';return;}
+const tubingLength=Math.sqrt(Math.pow(sideA,2)+Math.pow(sideB,2));
+document.getElementById('tubingResults').innerText=`Required Tubing Length: ${tubingLength.toFixed(2)} inches (${(tubingLength/12).toFixed(2)} feet)`;}
 </script>
 </body>
 </html>
